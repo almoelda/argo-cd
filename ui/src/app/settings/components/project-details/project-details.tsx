@@ -4,6 +4,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import {FormApi, Text} from 'react-form';
 import {RouteComponentProps} from 'react-router';
+import {Location} from 'history';
 import {Link} from 'react-router-dom';
 import {BadgePanel, CheckboxField, DataLoader, EditablePanel, ErrorNotification, MapInputField, Page, Query} from '../../../shared/components';
 import {AppContext, Consumer, AuthSettingsCtx} from '../../../shared/context';
@@ -17,6 +18,7 @@ import {ProjectRoleEditPanel} from '../project-role-edit-panel/project-role-edit
 import {ProjectSyncWindowsEditPanel} from '../project-sync-windows-edit-panel/project-sync-windows-edit-panel';
 import {ResourceListsPanel} from './resource-lists-panel';
 import {DeepLinks} from '../../../shared/components/deep-links';
+import { ApplicationsList } from '../../../applications/components/applications-list/applications-list';
 
 require('./project-details.scss');
 
@@ -226,7 +228,7 @@ export class ProjectDetails extends React.Component<RouteComponentProps<{name: s
                                                         {
                                                             key: 'applications',
                                                             title: 'Applications',
-                                                            content: this.SyncWindowsTab(proj, ctx)
+                                                            content: this.ApplicationsViewTab(proj, ctx)
                                                         },
                                                         {
                                                             key: 'events',
@@ -477,6 +479,62 @@ export class ProjectDetails extends React.Component<RouteComponentProps<{name: s
             </div>
         );
     }
+
+    private ApplicationsViewTab(proj: Project, ctx: any) {
+        type ProjectTabLocationContext = {
+          };
+          
+          // Initializing the variable
+          const myLocation: Location<ProjectTabLocationContext> = {
+            pathname: '/applications',
+            search: `?proj=${proj.metadata.name}dd`,
+            hash: "#section",
+            state: {
+              from: "/previous-path",
+              someData: "example data",
+            },
+            key: "unique-key", // Typically provided by react-router
+          };
+        // const location : Location<LocationState> = { pathname: '/applications', search: `?proj=${proj.metadata.name}` }
+        return <ApplicationsList history={undefined}  match={undefined} location={ myLocation } />
+    }
+
+
+    // private ApplicationsViewTab(proj: Project, ctx: any) {
+    //     return (
+    //         <div className='argo-container'>
+    //             <DataLoader
+    //                 noLoaderOnInputChange={true}
+    //                 input={proj.metadata.name}
+    //                 load={async () => {
+    //                     return await services.applications.list([proj.metadata.name]);
+    //                 }}>
+    //                 {data => (
+    //                     <div className='argo-table-list argo-table-list--clickable'>
+    //                         <div className='argo-table-list__head'>
+    //                             <div className='row'>
+    //                                 <div className='columns small-3'>NAME</div>
+    //                                 <div className='columns small-3'>PROJECT</div>
+    //                                 <div className='columns small-3'>STATUS</div>
+    //                                 <div className='columns small-3'>CLUSTER</div>
+    //                             </div>
+    //                         </div>
+    //                         {(data.items || []).map(app => (
+    //                             <div className='argo-table-list__row' key={app.metadata.name} onClick={() => this.appContext.apis.navigation.goto(`/applications/${app.metadata.name}`)}>
+    //                                 <div className='row'>
+    //                                     <div className='columns small-3'>{app.metadata.name}</div>
+    //                                     <div className='columns small-3'>{app.spec.project}</div>
+    //                                     <div className='columns small-3'>{app.status.sync.status}</div>
+    //                                     <div className='columns small-3'>{app.spec.destination.name || app.spec.destination.server}</div>
+    //                                 </div>
+    //                             </div>
+    //                         ))}
+    //                     </div>
+    //                 )}
+    //             </DataLoader>
+    //         </div>
+    //     );
+    // }
 
     private SyncWindowsTab(proj: Project, ctx: any) {
         return (
